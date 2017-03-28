@@ -70,3 +70,49 @@ Important Points:
 
 
 
+
+Target Programs:
+ 
+	Use command "objdump -d ctarget" or replace "ctarget" with "rtarget" to view the source code and find the key functions used in this project.
+	Both "ctarget" and "rtarget" read strings from standard input. They do so with the function "getbuf" found within the source code of the files.
+	The function "Gets" is similar to the standard library function "gets" —it reads a string from standard input (terminated by ‘\n’ or end-of-file)
+	and stores it (along with a null terminator) at the specified destination. In this code, you can see that the destination is an arraybuf, declared
+	as having "BUFFER_SIZE" bytes. At the time our targets were generated, BUFFER_SIZE was a compile-time constant specific to our version of the programs.
+
+	"FunctionsGets()" and "gets()" have no way to determine whether their destination buffers are large enough to store the string they read. They simply
+	copy sequences of bytes, possibly overrunning the bounds of the storage allocated at the destinations.
+
+	If the string typed by the user and read by "getbuf" is sufficiently short, it is clear that "getbuf" will return 1, as shown by the following execution examples:
+
+		unix> ./ctarget
+		Cookie: 0x3cc11c77
+		Type string: Keep it short!
+		No exploit. Getbuf returned 0x1
+		Normal return
+	
+	Typically an error occurs if you type a long string:
+
+		unix> ./ctarget
+		Cookie: 0x3cc11c77
+		Type string: This is not a very interesting string, but it has the property ...
+		Ouch!: You caused a segmentation fault!
+		Better luck next time
+
+	(Note that the value of the cookie is our unique value.)  Program "rtarget" will have the same behavior.  As the error message indicates, overrunning the buffer
+	typically causes the program state to be corrupted, leading to a memory access error. Our task is to be more clever with the strings we feed "ctarget" and "rtarget"
+	so that they execute the code we want and print corresponding victory messages. These are called exploit strings.
+
+	Both "ctarget" and "rtarget" take several different command line arguments:
+
+		-h: Print list of possible command line arguments
+
+		-q: Don’t send results to the grading server
+
+		-i FILE: Supply input from a file, rather than from standard input
+
+	Our exploit strings will typically contain byte values that do not correspond to the ASCII values for printing characters. The program "hex2raw" will enable us
+	to generate these rawstrings. See the following section entitled "Using HEX2RAW" for more information on how to use "hex2raw".
+
+
+
+
