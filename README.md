@@ -24,3 +24,35 @@ Introduction:
 
 
 
+
+Files:
+
+    - ctarget
+
+	Linux binary with code-injection vulnerability.  To be used for phases
+	1-3.
+
+    - rtarget
+
+	Linux binary with return-oriented programming vulnerability.  To be
+	used for phases 4-5.
+
+     - cookie.txt
+
+	Text file containing 4-byte signature required for this buffer overflow attack instance.
+	Our unique 4-byte sequence used for this project is: 0x3cc11c77
+
+     - farm.c
+
+	Source code for gadget farm present in this instance of rtarget.  You
+	can compile (use flag -Og) and disassemble it to look for gadgets. Used
+	for generating return-oriented programming attacks.
+
+     - hex2raw
+
+	Utility program to generate byte sequences. 
+
+
+
+
+
