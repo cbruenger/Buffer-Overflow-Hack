@@ -225,3 +225,53 @@ Generating Byte Codes:
 
 
 
+
+Phase_1
+
+	For this first phase, our exploit strings will attack CTARGET. This program is set up in a way that the stack
+	positions will be consistent from one run to the next and so that data on the stack can be treated as executable
+	code.These features make the program vulnerable to attacks where the exploit strings contain the byte encodings of
+	executable code.
+	
+	For Phase 1, we will not inject new code. Instead, our exploit string will redirect the program to execute an
+	existing procedure. Function getbuf() is called within CTARGET by a function test() having the following C code:
+	
+		1 void test()
+		2 {
+		3	int val;
+		4	val = getbuf();
+		5	printf("No exploit. Getbuf returned 0x%x\n", val);
+		6 }
+		
+	When getbuf executes its return statement (line 5 of getbuf), the program ordinarily resumes execution within
+	function test() (at line 5 of this function). We want to change this behavior. Within the filectarget, there is
+	code for a function touch1() having the following C representation:
+	
+		1 void touch1()
+		2 {
+		3	vlevel = 1;       /* Part of validation protocol */
+		4 	printf("Touch1!: You called touch1()\n");
+		5 	validate(1);
+		6	exit(0);
+		7 }
+		
+	Our task is to get CTARGET to execute the code for touch1() when getbuf executes its return statement, rather than
+	returning to test(). Note that our exploit string may also corrupt parts of the stack not directly related to
+	this stage, but this will not cause a problem, since touch1() causes the program to exit directly.
+	
+	Some Advice:
+	
+		- All the information we need to devise our exploit string for this level can be determined by examining a
+		disassembled version of CTARGET. Use objdump -d to get this dissembled version.
+		
+		- The idea is to position a byte representation of the starting address for touch1() so that the "ret"
+		instruction at the end of the code for getbuf() will transfer control to touch1().
+		
+		- Be careful about byte ordering.
+		
+		- We might want to use GDB to step the program through the last few instructions of getbuf() to make sure it
+		is doing the right thing.
+		
+		- The placement of "buf" within the stack frame for getbuf() depends on the value of compile-time constant
+		"BUFFER_SIZE", as well the allocation strategy used by GCC. We will need to examine the disassembled code to
+		determine its position.
