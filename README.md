@@ -56,3 +56,17 @@ Files:
 
 
 
+Important Points:
+
+	Addresses incorporated into an attack string for use by a "ret" instruction will be to one of the following destinations:
+
+		- The addresses for functions "touch1", "touch2", or "touch3"
+		- The address of our injected code
+		- The address of one of our gadgets form the gadget farm
+
+	Gadgets for this project are only constructed from the file "rtarget" with addresses ranging between those for functions
+	"start_farm" and "end_farm".
+
+
+
+
